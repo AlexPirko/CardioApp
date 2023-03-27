@@ -6,7 +6,15 @@
     "axe/forms": "off",
     "axe/structure": "off",
     "disown-opener": "off",
-    "button-type": "off"
+    "button-type": "off",
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "overscroll-behavior-y"
+        ]
+      }
+    ]
   },
   "browserslist": [
     "defaults",
