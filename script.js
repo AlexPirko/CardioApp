@@ -59,7 +59,6 @@ class Cycling extends Workout {
 
 
 class App {
-
   #map;
   #mapEvent;
   #workouts = [];
@@ -68,9 +67,13 @@ class App {
 
     this._getPosithion();
 
+    this._getLocalStorageData();
+
     form.addEventListener('submit', this._newWorkout.bind(this));
     
     inputType.addEventListener('change', this._toggleClimbField);
+
+    containerWorkouts.addEventListener('click', this._moveToWorkout.bind(this));
   }
 
   _getPosithion() {
@@ -96,6 +99,10 @@ class App {
       }).addTo(this.#map);
       
       this.#map.on('click', this._showForm.bind(this));
+
+      this.#workouts.forEach(workout => {
+        this._displayWorkout(workout);
+      })
   }
 
   _showForm(e) {
@@ -154,7 +161,9 @@ class App {
 
     this._displayWorkoutOnSidebar(workout);
 
-    this._hideForm();      
+    this._hideForm(); 
+    
+    this._addWorkoutsToLocalStorage();
   }
 
   _displayWorkout(workout) {
@@ -221,6 +230,37 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToWorkout(e) {
+    const workoutElement = e.target.closest('.workout');
+
+    if (!workoutElement) return;
+
+    const workout = this.#workouts.find(item => item.id === workoutElement.dataset.id);
+
+    this.#map.setView(workout.coords, 14, {
+      animate: true,
+      pan: {
+        duration: 1,
+      }
+    });    
+  }
+
+  _addWorkoutsToLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorageData() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+
+    if(!data) return;
+
+    this.#workouts = data;
+
+    this.#workouts.forEach(workout => {
+      this._displayWorkoutOnSidebar(workout);
+    })
   }
 }
 
